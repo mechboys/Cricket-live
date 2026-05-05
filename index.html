@@ -6,7 +6,7 @@
 <body style="background:black;color:white;text-align:center;font-family:sans-serif;">
 
 <h1>🏏 Live Score</h1>
-<h2 id="score">0 / 0</h2>
+<h2 id="score">Loading...</h2>
 
 <input id="key" placeholder="Admin key">
 <br><br>
@@ -19,7 +19,6 @@
 <button onclick="wicket()">W</button>
 <button onclick="extra()">WD/NB</button>
 
-<!-- Firebase scripts -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -40,13 +39,15 @@ const db = firebase.database();
 let runs = 0;
 let wickets = 0;
 
-// Read live data
+// 🔥 Load existing data first
 db.ref("match").on("value", snap => {
   let d = snap.val();
   if(d){
-    document.getElementById("score").innerText =
-      d.runs + " / " + d.wickets;
+    runs = d.runs || 0;
+    wickets = d.wickets || 0;
   }
+  document.getElementById("score").innerText =
+    runs + " / " + wickets;
 });
 
 // Admin check
@@ -56,21 +57,21 @@ function admin(){
 
 // Add runs
 function run(r){
-  if(!admin()) return alert("No access");
+  if(!admin()) return alert("Enter correct admin pin");
   runs += r;
   update();
 }
 
 // Wicket
 function wicket(){
-  if(!admin()) return alert("No access");
+  if(!admin()) return alert("Enter correct admin pin");
   wickets++;
   update();
 }
 
 // Extra (no runs added)
 function extra(){
-  if(!admin()) return alert("No access");
+  if(!admin()) return alert("Enter correct admin pin");
   update();
 }
 
