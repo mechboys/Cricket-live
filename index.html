@@ -3,22 +3,31 @@
 <head>
   <title>Village Cricket Live</title>
 </head>
+
 <body style="background:black;color:white;text-align:center;font-family:sans-serif;">
 
-<h1>🏏 Live Score</h1>
-<h2 id="score">Loading...</h2>
+<!-- LOGIN SCREEN -->
+<div id="loginPage">
+  <h2>Enter Admin Pin</h2>
+  <input id="key" placeholder="Enter Pin">
+  <p id="error" style="color:red;"></p>
+</div>
 
-<input id="key" placeholder="Admin key">
-<br><br>
+<!-- ADMIN SCREEN -->
+<div id="adminPage" style="display:none;">
+  <h1>🏏 Live Score</h1>
+  <h2 id="score">Loading...</h2>
 
-<button onclick="run(0)">0</button>
-<button onclick="run(1)">1</button>
-<button onclick="run(2)">2</button>
-<button onclick="run(4)">4</button>
-<button onclick="run(6)">6</button>
-<button onclick="wicket()">W</button>
-<button onclick="extra()">WD/NB</button>
+  <button onclick="run(0)">0</button>
+  <button onclick="run(1)">1</button>
+  <button onclick="run(2)">2</button>
+  <button onclick="run(4)">4</button>
+  <button onclick="run(6)">6</button>
+  <button onclick="wicket()">W</button>
+  <button onclick="extra()">WD/NB</button>
+</div>
 
+<!-- Firebase scripts -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -39,7 +48,7 @@ const db = firebase.database();
 let runs = 0;
 let wickets = 0;
 
-// 🔥 Load existing data first
+// Load data
 db.ref("match").on("value", snap => {
   let d = snap.val();
   if(d){
@@ -50,28 +59,30 @@ db.ref("match").on("value", snap => {
     runs + " / " + wickets;
 });
 
-// Admin check
-function admin(){
-  return document.getElementById("key").value === "1234";
-}
+// Auto login when typing PIN
+document.getElementById("key").addEventListener("input", function(){
+  if(this.value === "1234"){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("adminPage").style.display = "block";
+  } else {
+    document.getElementById("error").innerText = "Wrong Pin";
+  }
+});
 
 // Add runs
 function run(r){
-  if(!admin()) return alert("Enter correct admin pin");
   runs += r;
   update();
 }
 
 // Wicket
 function wicket(){
-  if(!admin()) return alert("Enter correct admin pin");
   wickets++;
   update();
 }
 
 // Extra (no runs added)
 function extra(){
-  if(!admin()) return alert("Enter correct admin pin");
   update();
 }
 
